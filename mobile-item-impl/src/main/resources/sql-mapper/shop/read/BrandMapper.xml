@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haier.m.dao.shop.read.BrandReadDao">
+       <resultMap id="brandResult" type="com.haier.m.entity.item.Brand">
+              <result property="id" column="id"/>
+              <result property="siteId" column="siteId"/>
+              <result property="brandName" column="brandName"/>
+              <result property="brandCode" column="brandCode"/>
+              <result property="brandLogo" column="brandLogo"/>
+              <result property="brandUrl" column="brandUrl"/>
+              <result property="isBest" column="isBest"/>
+       </resultMap>
+
+       <!--查询所有顺逛渠道的品牌列表-->
+       <select id="getBrandList" resultType="com.haier.m.entity.item.Brand">
+              SELECT * FROM Brands WHERE FIND_IN_SET('3',`channel`)
+       </select>
+
+       <select id="getBrandById" resultType="com.haier.m.entity.item.Brand">
+              SELECT * FROM Brands WHERE id=#{id}
+       </select>
+</mapper>

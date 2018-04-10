@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="console-log" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{HH:mm:ss SSS\} %-5p] %m%n" />
+		</layout>
+	</appender>
+	<!--<appender name="file-log" class="org.apache.log4j.DailyRollingFileAppender">-->
+		<!--&lt;!&ndash;<param name="file" value="/home/admin/output/logs/javalog/mobile-item-service.log" />&ndash;&gt;-->
+		<!--<param name="file" value="/worksp/logs/mobile-item-service.log" />-->
+		<!--<param name="append" value="true" />-->
+		<!--<param name="DatePattern" value="'.'yyyy-MM-dd" />-->
+		<!--<layout class="org.apache.log4j.PatternLayout">-->
+			<!--<param name="ConversionPattern" value="[%d{MM-dd HH:mm:ss SSS} %-5p] %m%n" />-->
+		<!--</layout>-->
+	<!--</appender>-->
+	<!---->
+	<!--&lt;!&ndash;应用的日志 打入syslog-ng &ndash;&gt;-->
+	<!--<appender name="syslogNG" class="org.apache.log4j.net.SyslogAppender">-->
+		<!--<param name="SyslogHost" value="10.9.30.179:514" />-->
+		<!--<param name="Facility" value="LOCAL5" />-->
+		<!--<layout class="org.apache.log4j.PatternLayout">-->
+			<!--<param name="ConversionPattern" value="mobile-item-service [%d{MM-dd HH:mm:ss SSS} %-5p] %m%n" />-->
+		<!--</layout>-->
+	<!--</appender>-->
+	
+	<logger name="com.alibaba" additivity="false"> 
+		<level value="warn"></level>
+		<appender-ref ref="console-log"/>
+	</logger>
+	
+	<logger name="com.haier" additivity="false"> 
+		<level value="DEBUG"></level>
+		<appender-ref ref="console-log"/>
+		<!--<appender-ref ref="syslogNG"/>-->
+	</logger>
+
+    <logger name="java.sql" additivity="false">
+    	<level value="DEBUG"></level>
+        <appender-ref ref="console-log"/>
+        <!--<appender-ref ref="syslogNG"/>-->
+    </logger>
+    
+    <!--<logger name="psilogger" additivity="false">-->
+		<!--<level value="DEBUG" />-->
+		<!--&lt;!&ndash;<appender-ref ref="psiLogNG"/>&ndash;&gt;-->
+	<!--</logger>-->
+
+	<root>
+		<level value="INFO" />
+		<appender-ref ref="console-log" />
+		<!--<appender-ref ref="syslogNG" />-->
+	</root>
+</log4j:configuration>

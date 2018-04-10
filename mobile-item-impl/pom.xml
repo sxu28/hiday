@@ -1,0 +1,395 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.haier</groupId>
+		<artifactId>mobile-item-parent</artifactId>
+		<version>2.3.2-SNAPSHOT</version>
+		<relativePath>../mobile-item-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>mobile-item-impl</artifactId>
+	<packaging>jar</packaging>
+	<name>mobile-item-impl</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.haier</groupId>
+			<artifactId>mobile-item-service</artifactId>
+		</dependency>
+
+		<!-- ali dubbo -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>dubbo</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.sgroschupf</groupId>
+			<artifactId>zkclient</artifactId>
+		</dependency>
+
+		<!-- spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>${version-spring}</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+		</dependency>
+
+		<!-- mysql -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jdbc</artifactId>
+		</dependency>
+
+		<!-- ali json -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.1.15</version>
+		</dependency>
+
+		<!--psi监控 start -->
+		<dependency>
+			<groupId>com.aixforce.monitor</groupId>
+			<artifactId>client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>xmlpull</groupId>
+			<artifactId>xmlpull</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>xpp3</groupId>
+			<artifactId>xpp3_min</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+		</dependency>
+		<!--psi监控 end -->
+		<dependency>
+				<groupId>net.sf.dozer</groupId>
+				<artifactId>dozer</artifactId>
+				<version>5.5.1</version>
+			</dependency>
+		<!-- Redis缓存 -->
+		<dependency>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson</artifactId>
+			<version>2.2.13</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.haier</groupId>
+			<artifactId>sg-common-jar</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.haier</groupId>
+			<artifactId>mobile-common-jar</artifactId>
+			<version>1.1.5</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes />
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${version-maven-jar-plugin}</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>false</addClasspath>
+							<mainClass>com.alibaba.dubbo.container.Main</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>${version-maven-assembly-plugin}</version>
+				<executions>
+					<execution>
+						<id>make-binary-package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>job-deploy</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>src/main/resources/assemble-descriptor.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+	    <profile>
+	    <id>pre</id>
+	    <properties>
+	    	<pom.dubbo.protocol.port>20913</pom.dubbo.protocol.port>
+				<pom.registry.protocol>zookeeper</pom.registry.protocol>
+				<pom.registry.address>pre-reg01:2181</pom.registry.address>
+				<pom.registry.public.address>pre-reg01:2181</pom.registry.public.address>
+				<pom.registry.private.address>pre-reg01:2181</pom.registry.private.address>
+				<pom.dubbo.provider.group />
+				<pom.dubbo.consumer.group />
+				
+				<pom.jdbc.shop.read.url>jdbc:mysql://pre-shopdb02:3306/Shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.shop.read.url>
+				<pom.jdbc.shop.read.username>pdc_rd</pom.jdbc.shop.read.username>
+				<pom.jdbc.shop.read.password>cfds0920</pom.jdbc.shop.read.password>
+
+				<pom.jdbc.shop.write.url>jdbc:mysql://pre-shopdb01:3306/Shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.shop.write.url>
+				<pom.jdbc.shop.write.username>pdc_rd</pom.jdbc.shop.write.username>
+				<pom.jdbc.shop.write.password>cfds0920</pom.jdbc.shop.write.password>
+
+				<pom.jdbc.mshop.write.url>jdbc:mysql://pre-mshopdb01.ehaierali.com:3306/m_shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.mshop.write.url>
+				<pom.jdbc.mshop.write.username>pdc_rd</pom.jdbc.mshop.write.username>
+				<pom.jdbc.mshop.write.password>cfds0920</pom.jdbc.mshop.write.password>
+
+				<pom.jdbc.mshop.read.url>jdbc:mysql://pre-mshopdb02.ehaierali.com:3306/m_shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.mshop.read.url>
+				<pom.jdbc.mshop.read.username>pdc_rd</pom.jdbc.mshop.read.username>
+				<pom.jdbc.mshop.read.password>cfds0920</pom.jdbc.mshop.read.password>
+				
+				<pom.jdbc.store.read.url>
+                    jdbc:mysql://pre-storedb02:3306/db_store?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull
+                </pom.jdbc.store.read.url>
+                <pom.jdbc.store.read.username>pdc_rd</pom.jdbc.store.read.username>
+                <pom.jdbc.store.read.password>cfds0920</pom.jdbc.store.read.password>
+
+				<pom.dubbo.properties-file>classpath:dubbo.properties</pom.dubbo.properties-file>
+				<pom.jvm.mem-opts />
+
+				<pom.log.log4j-xml>log4j.xml</pom.log.log4j-xml>
+				<pom.log.dir>/home/admin/output/logs/javalog/</pom.log.dir>
+				<pom.log.stdout-file>mobile-item-service-stdout.log</pom.log.stdout-file>
+
+				<pom.log.root-level>INFO</pom.log.root-level>
+				<pom.log.root-appender>file-log</pom.log.root-appender>
+				<pom.log.haier-level>INFO</pom.log.haier-level>
+				<pom.log.haier-appender>file-log</pom.log.haier-appender>
+				<pom.redis.config>redis_pre.properties</pom.redis.config>
+				<pom.logng.facility>LOCAL5</pom.logng.facility>
+	    </properties>
+	    </profile>
+	    
+		<profile>
+			<id>prd</id>
+			<properties>
+				<pom.dubbo.protocol.port>20913</pom.dubbo.protocol.port>
+				<pom.registry.protocol>zookeeper</pom.registry.protocol>
+				<pom.registry.address>10.9.10.137:2181</pom.registry.address>
+				<pom.registry.public.address>10.9.10.137:2181</pom.registry.public.address>
+				<pom.registry.private.address>10.9.10.137:2181</pom.registry.private.address>
+				<pom.dubbo.provider.group />
+				<pom.dubbo.consumer.group />
+				
+				<pom.jdbc.shop.read.url>jdbc:mysql://my-www-rnd.vip.ehaieridc.net:3306/Shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.shop.read.url>
+				<pom.jdbc.shop.read.username>mobile_shop_ro</pom.jdbc.shop.read.username>
+				<pom.jdbc.shop.read.password>Ol7kvMHgTedCDXvtp4no</pom.jdbc.shop.read.password>
+
+				<pom.jdbc.shop.write.url>jdbc:mysql://my-www-wrt.vip.ehaieridc.net:3306/Shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.shop.write.url>
+				<pom.jdbc.shop.write.username>mobile_shop_ser</pom.jdbc.shop.write.username>
+				<pom.jdbc.shop.write.password>wuMCDqjO38maulNgPwFj</pom.jdbc.shop.write.password>
+
+				<pom.jdbc.mshop.write.url>jdbc:mysql://my-wap-wrt.vip.ehaieridc.net:3306/m_shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.mshop.write.url>
+				<pom.jdbc.mshop.write.username>m_shop_ser</pom.jdbc.mshop.write.username>
+				<pom.jdbc.mshop.write.password>Lljf0dCHhzbrIuYIPa2N</pom.jdbc.mshop.write.password>
+
+				<pom.jdbc.mshop.read.url>jdbc:mysql://my-wap-rnd.vip.ehaieridc.net:3306/m_shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.mshop.read.url>
+				<pom.jdbc.mshop.read.username>m_shop_ro_new</pom.jdbc.mshop.read.username>
+				<pom.jdbc.mshop.read.password>viUECwgxahgPtl9Gwx6S</pom.jdbc.mshop.read.password>
+				
+				<pom.jdbc.store.read.url>
+                    jdbc:mysql://my-sg-rnd.vip.ehaieridc.net:3306/db_store?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull&amp;allowMultiQueries=true
+                </pom.jdbc.store.read.url>
+                <pom.jdbc.store.read.username>db_store_ro</pom.jdbc.store.read.username>
+                <pom.jdbc.store.read.password>C0T1Lk2dVZx3Gtgl1vMwp</pom.jdbc.store.read.password>
+
+				<pom.dubbo.properties-file>classpath:dubbo.properties</pom.dubbo.properties-file>
+				<pom.jvm.mem-opts />
+
+				<pom.log.log4j-xml>log4j.xml</pom.log.log4j-xml>
+				<pom.log.dir>/home/admin/output/logs/javalog/</pom.log.dir>
+				<pom.log.stdout-file>mobile-item-service-stdout.log</pom.log.stdout-file>
+
+				<pom.log.root-level>INFO</pom.log.root-level>
+				<pom.log.root-appender>file-log</pom.log.root-appender>
+				<pom.log.haier-level>INFO</pom.log.haier-level>
+				<pom.log.haier-appender>file-log</pom.log.haier-appender>
+				<pom.redis.config>redis_prd.properties</pom.redis.config>
+				<pom.logng.facility>LOCAL4</pom.logng.facility>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>m_alitest</id>
+			<properties>
+				<pom.dubbo.protocol.port>20913</pom.dubbo.protocol.port>
+				<pom.registry.protocol>zookeeper</pom.registry.protocol>
+				<pom.registry.address>reg01.ehaierali.com:2181</pom.registry.address>
+				<pom.registry.public.address>reg01.ehaierali.com:2181</pom.registry.public.address>
+				<pom.registry.private.address>reg01.ehaierali.com:2181</pom.registry.private.address>
+				<pom.dubbo.provider.group />
+				<pom.dubbo.consumer.group />
+				
+				<pom.jdbc.shop.read.url>jdbc:mysql://mysql01.ehaierali.com:3306/Shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.shop.read.url>
+				<pom.jdbc.shop.read.username>pdc_rd</pom.jdbc.shop.read.username>
+				<pom.jdbc.shop.read.password>cfds0920</pom.jdbc.shop.read.password>
+
+				<pom.jdbc.shop.write.url>jdbc:mysql://mysql01.ehaierali.com:3306/Shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.shop.write.url>
+				<pom.jdbc.shop.write.username>pdc_rd</pom.jdbc.shop.write.username>
+				<pom.jdbc.shop.write.password>cfds0920</pom.jdbc.shop.write.password>
+
+				<pom.jdbc.mshop.write.url>jdbc:mysql://mysql01.ehaierali.com:3306/m_shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.mshop.write.url>
+				<pom.jdbc.mshop.write.username>pdc_rd</pom.jdbc.mshop.write.username>
+				<pom.jdbc.mshop.write.password>cfds0920</pom.jdbc.mshop.write.password>
+
+				<pom.jdbc.mshop.read.url>jdbc:mysql://mysql01.ehaierali.com:3306/m_shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.mshop.read.url>
+				<pom.jdbc.mshop.read.username>pdc_rd</pom.jdbc.mshop.read.username>
+				<pom.jdbc.mshop.read.password>cfds0920</pom.jdbc.mshop.read.password>
+				
+				<pom.jdbc.store.read.url>
+                    jdbc:mysql://mysql01.ehaierali.com:3306/db_store?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull
+                </pom.jdbc.store.read.url>
+                <pom.jdbc.store.read.username>pdc_rd</pom.jdbc.store.read.username>
+                <pom.jdbc.store.read.password>cfds0920</pom.jdbc.store.read.password>
+
+				<pom.dubbo.properties-file>classpath:dubbo.properties</pom.dubbo.properties-file>
+				<pom.jvm.mem-opts />
+
+				<pom.log.log4j-xml>log4j.xml</pom.log.log4j-xml>
+				<pom.log.dir>/home/admin/output/logs/javalog/</pom.log.dir>
+				<pom.log.stdout-file>mobile-item-service-stdout.log</pom.log.stdout-file>
+
+				<pom.log.root-level>INFO</pom.log.root-level>
+				<pom.log.root-appender>file-log</pom.log.root-appender>
+				<pom.log.haier-level>INFO</pom.log.haier-level>
+				<pom.log.haier-appender>file-log</pom.log.haier-appender>
+				<pom.redis.config>redis_dev.properties</pom.redis.config>
+				<pom.logng.facility>LOCAL5</pom.logng.facility>
+			</properties>
+		</profile>
+		<profile>
+			<id>dhc_dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<pom.dubbo.protocol.port>20913</pom.dubbo.protocol.port>
+				<pom.registry.protocol>zookeeper</pom.registry.protocol>
+				<pom.registry.address>127.0.0.1:2181</pom.registry.address>
+				<pom.registry.public.address>127.0.0.1:2181|reg01.ehaierali.com:2181</pom.registry.public.address>
+				<pom.registry.private.address>127.0.0.1:2181</pom.registry.private.address>
+				<pom.dubbo.provider.group />
+				<pom.dubbo.consumer.group />
+				
+				<pom.jdbc.shop.read.url>jdbc:mysql://mysql01.ehaierali.com:3306/Shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.shop.read.url>
+				<pom.jdbc.shop.read.username>pdc_rd</pom.jdbc.shop.read.username>
+				<pom.jdbc.shop.read.password>cfds0920</pom.jdbc.shop.read.password>
+
+				<pom.jdbc.shop.write.url>jdbc:mysql://mysql01.ehaierali.com:3306/Shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.shop.write.url>
+				<pom.jdbc.shop.write.username>pdc_rd</pom.jdbc.shop.write.username>
+				<pom.jdbc.shop.write.password>cfds0920</pom.jdbc.shop.write.password>
+
+				<pom.jdbc.mshop.write.url>jdbc:mysql://mysql01.ehaierali.com:3306/m_shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.mshop.write.url>
+				<pom.jdbc.mshop.write.username>pdc_rd</pom.jdbc.mshop.write.username>
+				<pom.jdbc.mshop.write.password>cfds0920</pom.jdbc.mshop.write.password>
+
+				<pom.jdbc.mshop.read.url>jdbc:mysql://mysql01.ehaierali.com:3306/m_shop?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</pom.jdbc.mshop.read.url>
+				<pom.jdbc.mshop.read.username>pdc_rd</pom.jdbc.mshop.read.username>
+				<pom.jdbc.mshop.read.password>cfds0920</pom.jdbc.mshop.read.password>
+				
+				<pom.jdbc.store.read.url>
+                    jdbc:mysql://mysql01.ehaierali.com:3306/db_store?characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull
+                </pom.jdbc.store.read.url>
+                <pom.jdbc.store.read.username>pdc_rd</pom.jdbc.store.read.username>
+                <pom.jdbc.store.read.password>cfds0920</pom.jdbc.store.read.password>
+
+				<pom.dubbo.properties-file>classpath:dubbo.properties</pom.dubbo.properties-file>
+				<pom.jvm.mem-opts />
+
+				<pom.log.log4j-xml>log4j.xml</pom.log.log4j-xml>
+				<pom.log.dir>/home/admin/output/logs/javalog/</pom.log.dir>
+				<pom.log.stdout-file>mobile-item-service-stdout.log</pom.log.stdout-file>
+
+				<pom.log.root-level>DEBUG</pom.log.root-level>
+				<pom.log.root-appender>console-log</pom.log.root-appender>
+				<pom.log.haier-level>DEBUG</pom.log.haier-level>
+				<pom.log.haier-appender>file-log</pom.log.haier-appender>
+				<pom.redis.config>redis_dev.properties</pom.redis.config>
+				<pom.logng.facility>LOCAL5</pom.logng.facility>
+			</properties>
+		</profile>
+	</profiles>
+</project>

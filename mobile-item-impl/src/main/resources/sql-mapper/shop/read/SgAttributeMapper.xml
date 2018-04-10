@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haier.m.dao.shop.read.SgAttributeReadDao">
+	<resultMap id="SgAttributeResult" type="com.haier.m.entity.item.SgAttribute">
+			<result property="id" column="id" />
+			<result property="storeId" column="store_id" />
+			<result property="productId" column="product_id" />
+			<result property="sku" column="sku" />
+			<result property="attrCode" column="attr_code" />
+			<result property="attrName" column="attr_name" />
+			<result property="attrValueCode" column="attr_value_code" />
+			<result property="attrValueName" column="attr_value_name" />
+			<result property="remark" column="remark" />
+			<result property="orders" column="orders" />
+	</resultMap>
+	
+	<select id="get" parameterType="Integer" resultMap="SgAttributeResult">
+		select
+		   *
+		from `sg_attribute`
+		where `id` = #{id}
+	</select>
+	<select id="getSgAttributeByMap" parameterType="java.util.Map" resultMap="SgAttributeResult">
+		SELECT id,store_id,product_id,sku,attr_code,attr_name,attr_value_code,attr_value_name,remark,orders
+		from sg_attribute
+		where product_id = #{productId} AND store_id = #{storeId} AND is_delete != 1
+		AND id in
+		<foreach collection="list" index="index" item="list" open="("
+				 separator="," close=")">
+			#{list}
+		</foreach>
+		ORDER BY orders
+	</select>
+
+</mapper>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haier.m.dao.shop.read.OrderRepairsDao">
+    <resultMap id="orderRepairsResult" type="com.haier.m.entity.order.OrderRepairsInfo">
+        <result property="id" column="id" />
+        <result property="siteId" column="siteId" />
+        <result property="addTime" column="addTime" />
+        <result property="memberId" column="memberId" />
+        <result property="orderId" column="orderId" />
+        <result property="orderProductId" column="orderProductId" />
+        <result property="cPaymentStatus" column="cPaymentStatus" />
+        <result property="paymentStatus" column="paymentStatus" />
+        <result property="paymentTime" column="paymentTime" />
+        <result property="paymentName" column="paymentName" />
+        <result property="receiptStatus" column="receiptStatus" />
+        <result property="receiptTime" column="receiptTime" />
+        <result property="storageStatus" column="storageStatus" />
+        <result property="storageTime" column="storageTime" />
+        <result property="typeExpect" column="typeExpect" />
+        <result property="typeActual" column="typeActual" />
+        <result property="reason" column="reason" />
+        <result property="description" column="description" />
+        <result property="contactName" column="contactName" />
+        <result property="contactMobile" column="contactMobile" />
+        <result property="handleStatus" column="handleStatus" />
+        <result property="handleTime" column="handleTime" />
+        <result property="handleRemark" column="handleRemark" />
+        <result property="repairSn" column="repairSn" />
+        <result property="count" column="count" />
+        <result property="requestServiceRemark" column="requestServiceRemark" />
+        <result property="requestServiceDate" column="requestServiceDate" />
+        <result property="offlineFlag" column="offlineFlag" />
+        <result property="offlineReason" column="offlineReason" />
+        <result property="offlineAmount" column="offlineAmount" />
+        <result property="offlineRemark" column="offlineRemark" />
+        <result property="offlineConfirmFlag" column="offlineConfirmFlag" />
+        <result property="hpFirstAddTime" column="hpFirstAddTime" />
+        <result property="hpSecondAddTime" column="hpSecondAddTime" />
+        <result property="modified" column="modified" />
+        <result property="finishTime" column="finishTime" />
+        <result property="refundAmount" column="refundAmount" />
+        <result property="checkType" column="checkType" />
+        <result property="checkResult" column="checkResult" />
+        <result property="quality" column="quality" />
+        <result property="packResult" column="packResult" />
+        <result property="inspectTime" column="inspectTime" />
+        <result property="netPointName" column="netPointName" />
+        <result property="phoneNumber" column="phoneNumber" />
+        <result property="proId" column="proId" />
+        <result property="cPayTime" column="cPayTime" />
+        <result property="shippingMode" column="shippingMode" />
+        <result property="stockType" column="stockType" />
+        <result property="o2oType" column="o2oType" />
+        <result property="woId" column="woId" />   
+        <result property="isCod" column="isCod" />
+        <result property="orderSn" column="orderSn" />
+    </resultMap>
+    <select id="getOrderRepairsIdByOrderIds" resultMap="orderRepairsResult">
+        select orderId,orderProductId
+        from OrderRepairs o
+        where 1=1
+        <choose>
+            <when test="ids==null">
+                and 1 = -1
+            </when>
+            <when test="ids.size()>0">
+                and o.addTime in(
+                SELECT max(addTime) FROM OrderRepairs a WHERE orderId IN
+                <foreach collection="ids" item="id" index="index" open="(" separator="," close=")" >
+                    #{id}
+                </foreach>
+                GROUP BY orderId )
+                AND o.orderId IN
+                <foreach collection="ids" item="id" index="index" open="(" separator="," close=")" >
+                    #{id}
+                </foreach>
+            </when>
+            <otherwise>
+                and 1 = -1
+            </otherwise>
+
+        </choose>
+    </select>
+
+    <select id="getOrderRepairsByOrderProductId" parameterType="Integer" resultMap="orderRepairsResult">
+            SELECT o.orderId,o.memberId,o.paymentStatus,o.handleStatus,o.typeActual,o.refundAmount,o.reason,o.description
+                  ,o.repairSn
+                  ,orr.checkType,orr.quality,orr.packResult,orr.inspectTime
+                  ,from_unixtime(IFNULL(o.addTime,""), '%Y-%m-%d %H:%i:%s') as addTime
+                  ,from_unixtime(IFNULL(o.handleTime,""), '%Y-%m-%d %H:%i:%s') as handleTime
+                  ,from_unixtime(IFNULL(o.paymentTime,""), '%Y-%m-%d %H:%i:%s') as paymentTime
+            FROM OrderRepairs o
+            LEFT JOIN OrderRepairHPRecords orr
+            ON o.id = orr.orderRepairId
+            WHERE o.orderProductId = #{orderProductId}
+            ORDER BY o.addTime desc
+    </select>
+    
+    <select id="getOrderRepairsDetailByOrderProductId" parameterType="Integer" resultMap="orderRepairsResult">
+            SELECT o.orderId,o.memberId,o.paymentStatus,o.handleStatus,o.typeActual,o.refundAmount,o.reason,o.description,o.handleRemark
+                  ,o.offlineFlag
+                  ,o.repairSn
+                  ,pro.cPaymentStatus
+                  ,o.storageStatus
+                  ,orr.checkType
+                  ,orr.quality
+                  ,orr.packResult
+                  ,orr.inspectTime
+                  ,orr.checkResult
+                  ,net.netPointName
+                  ,net.phoneNumber
+                  ,pro.id as proId
+                  ,pro.stockType
+                  ,pro.o2oType
+                  ,from_unixtime(IFNULL(pro.cPayTime,""), '%Y-%m-%d %H:%i:%s') as cPayTime
+                  ,pro.shippingMode
+                  ,orr.woId
+                  ,s.isCod
+                  ,s.orderSn
+                  ,from_unixtime(IFNULL(o.addTime,""), '%Y-%m-%d %H:%i:%s') as addTime
+                  ,from_unixtime(IFNULL(o.modified,""), '%Y-%m-%d %H:%i:%s') as modifiedTime
+                  ,from_unixtime(IFNULL(orr.addTime,""), '%Y-%m-%d %H:%i:%s') as orraddTime
+                  ,from_unixtime(IFNULL(o.handleTime,""), '%Y-%m-%d %H:%i:%s') as handleTime
+                  ,from_unixtime(IFNULL(o.paymentTime,""), '%Y-%m-%d %H:%i:%s') as paymentTime
+            FROM OrderRepairs o
+            LEFT JOIN OrderProducts pro
+            ON o.orderProductId = pro.id
+            LEFT JOIN Orders s
+            ON s.id = pro.orderId
+            LEFT JOIN OrderRepairHPRecords orr
+            ON o.id = orr.orderRepairId
+            LEFT JOIN NetPoints net
+            ON orr.netPointCode = net.netPointN8
+            WHERE o.orderProductId = #{orderProductId}
+            ORDER BY o.addTime desc
+    </select>
+    <select id="getOrderRepairsByCOrderSn" resultMap="orderRepairsResult">
+        SELECT o.orderId,o.memberId,o.paymentStatus,o.handleStatus,o.typeActual,o.refundAmount,o.reason,o.description
+        ,o.repairSn
+        ,from_unixtime(IFNULL(o.addTime,""), '%Y-%m-%d %H:%i:%s') as addTime
+        ,from_unixtime(IFNULL(o.handleTime,""), '%Y-%m-%d %H:%i:%s') as handleTime
+        ,from_unixtime(IFNULL(o.paymentTime,""), '%Y-%m-%d %H:%i:%s') as paymentTime
+        FROM OrderRepairs o,
+        OrderProducts op
+        WHERE o.orderProductId = op.id
+        AND op.cOrderSn = #{cOrderSn}
+        limit 1
+    </select>
+    
+    <select id="getNetpointsByOrderProductId" parameterType="Integer" resultMap="orderRepairsResult">
+         SELECT op.id as orderProductId,net.netPointName,net.contactMobile,net.phoneNumber
+         FROM OrderProducts op
+         LEFT JOIN NetPoints net ON op.netPointId = net.id
+         where op.id  = #{orderPorductId} limit 1;
+    </select>
+    
+    <select id="getOrerRepairsCountByMemberId" parameterType="Integer" resultType="int">
+    	SELECT id
+    	FROM OrderRepairs
+    	WHERE memberId = #{memberId}
+    	GROUP BY orderId
+    </select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haier.m.dao.mshop.write.OrderLimitConditionDao">
+	<resultMap id="conditionResult" type="com.haier.m.entity.order.OrderLimitCondition">
+		<result property="id" column="id" />
+		<result property="limitCondition" column="limitCondition" />
+		<result property="isLimitValue" column="isLimitValue" />
+		<result property="modifyTime" column="modifyTime" />
+		<result property="modifyUser" column="modifyUser" />
+	</resultMap>
+
+	<update id="updateCondition">
+		update `order_limit_condition`
+		<set>
+			<if test="isLimitValue != null">`isLimitValue`= #{isLimitValue},</if>
+			<if test="modifyUser != null">`modifyUser`= #{modifyUser}</if>
+		</set>
+		where `limitCondition` = #{limitCondition}
+	</update>
+</mapper>

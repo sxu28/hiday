@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haier.m.dao.shop.read.OrdersAttributesReadDao">
+	<resultMap id="ordersAttributesResult" type="com.haier.m.entity.order.OrdersAttributes">
+		<result property="id" column="id" />
+		<result property="iswww" column="iswww" />
+		<result property="orderId" column="order_id" />
+		<result property="lbx" column="lbx" />
+		<result property="sourceOrderSn" column="source_order_sn" />
+		<result property="orderYwType" column="order_yw_type" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="diamondCount" column="diamond_count" />
+		<result property="diamondAmt" column="diamond_amt" />
+
+		<result property="seashellCount" column="seashell_count" />
+		<result property="seashellAmt" column="seashell_amt" />
+
+		<result property="insuranceCount" column="insurance_count" />
+		<result property="insuranceAmt" column="insurance_amt" />
+		<result property="bankBenefit" column="bank_benefit"/>
+	</resultMap>
+
+	<select id="get" parameterType="Integer" resultMap="ordersAttributesResult">
+		SELECT `id`, `iswww`, `order_id`, `lbx`, `source_order_sn`, `order_yw_type`, `create_time`, `update_time` FROM `OrdersAttributes` WHERE `id` = #{id}
+	</select>
+
+	<select id="getByOrderId" parameterType="Integer" resultMap="ordersAttributesResult">
+		SELECT `id`, `iswww`, `order_id`, `lbx`, `source_order_sn`, `order_yw_type`, `create_time`, `update_time`,`diamond_count`,`diamond_amt`,`seashell_count`,`seashell_amt`,`insurance_count`,`insurance_amt` ,bank_benefit FROM `OrdersAttributes` WHERE `order_id` = #{orderId}
+	</select>
+
+	<select id="getByLbx" parameterType="String" resultMap="ordersAttributesResult">
+		SELECT `id`, `iswww`, `order_id`, `lbx`, `source_order_sn`, `order_yw_type`, `create_time`, `update_time` FROM `OrdersAttributes` WHERE `lbx` = #{lbx}
+	</select>
+
+	<select id="getBySourceOrderSn" parameterType="String" resultMap="ordersAttributesResult">
+		SELECT `id`, `iswww`, `order_id`, `lbx`, `source_order_sn`, `order_yw_type`, `create_time`, `update_time` FROM `OrdersAttributes` WHERE `source_order_sn` = #{sourceOrderSn}
+	</select>
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haier.m.dao.shop.read.ProductCatesReadDao">
+    <resultMap id="productCatesResult" type="com.haier.m.entity.item.ProductCates">
+        <result property="id" column="id"/>
+        <result property="siteId" column="siteId"/>
+        <result property="parentId" column="parentId"/>
+        <result property="parentPath" column="parentPath"/>
+        <result property="cateName" column="cateName"/>
+        <result property="sortNum" column="sortNum"/>
+        <result property="isHidden" column="isHidden"/>
+        <result property="cateFilters" column="cateFilters"/>
+        <result property="extendCateFilters" column="extendCateFilters"/>
+        <result property="priceRange" column="priceRange"/>
+        <result property="packDesc" column="packDesc"/>
+        <result property="deliveryDesc" column="deliveryDesc"/>
+        <result property="afterService" column="afterService"/>
+        <result property="lastModifyTime" column="lastModifyTime"/>
+        <result property="modified" column="modified"/>
+    </resultMap>
+    <select id="findById" parameterType="Integer" resultMap="productCatesResult">
+    	select * from ProductCates where id = #{id}
+    </select>
+    <select id="findInProductCateIds" parameterType="java.util.List" resultMap="productCatesResult">
+    	select cateName from ProductCates where id in
+        <foreach collection="list" index="index" item="list" open="("
+                 separator="," close=")">
+            #{list}
+        </foreach>
+        ORDER BY sortNum DESC
+    </select>
+</mapper>

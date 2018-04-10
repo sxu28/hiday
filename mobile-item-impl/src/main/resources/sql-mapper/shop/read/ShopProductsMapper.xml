@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haier.m.dao.shop.read.ShopProductsReadDao">
+    <resultMap id="productsResult" type="com.haier.m.entity.item.Products">
+        <result property="id" column="id"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="productName"/>
+        <result property="productActivityInfo" column="product_activity_info"/>
+        <result property="productTitle" column="productTitle"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="productTypeId" column="product_type_id"/>
+        <result property="sellingPoint" column="selling_point"/>
+        <result property="productDetail" column="product_detail"/>
+        <result property="productBlockDetail" column="product_block_detail"/>
+        <result property="productCateId" column="product_cate_id"/>
+        <result property="productCatePath" column="product_cate_path"/>
+        <result property="onSale" column="on_sale"/>
+        <result property="isHot" column="is_hot"/>
+        <result property="isBest" column="is_best"/>
+        <result property="isNew" column="is_new"/>
+        <result property="isSpecial" column="is_special"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="supplyPrice" column="supply_price"/>
+        <result property="packagePrice" column="package_price"/>
+        <result property="saleGuidePrice" column="sale_guide_price"/>
+        <result property="rankPrice" column="rank_price"/>
+        <result property="sku" column="sku"/>
+        <result property="shippingMode" column="shipping_mode"/>
+        <result property="packageId" column="package_id"/>
+        <result property="isNotConfirm" column="is_not_confirm"/>
+        <result property="isNoLimitStockProduct" column="is_no_limit_stock_product"/>
+        <result property="productFullName" column="product_full_name"/>
+        <result property="defaultImageUrl" column="default_image_url"/>
+        <result property="indexImageUrl" column="index_image_url"/>
+        <result property="videoUrl" column="video_url"/>
+        <result property="productSource" column="product_source"/>
+        <result property="mobilePrice" column="mobile_price"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="addTime" column="add_time"/>
+        <result property="addUser" column="add_user"/>
+        <result property="modifyTime" column="modify_time"/>
+        <result property="modifyUser" column="modify_user"/>
+        <result property="productO2OType" column="productO2OType"/>
+        <result property="keywords" column="keywords" />
+    </resultMap>
+    <resultMap id="prdStoreProductsResult" type="com.haier.m.entity.item.O2OPrdStoreProducts">
+        <result property="storeProductId" column="store_product_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="sku" column="sku"/>
+        <result property="stockNum" column="stock_num"/>
+        <result property="onSale" column="on_sale"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="lastUpdateUserId" column="last_update_user_id"/>
+        <result property="lastUpdateTime" column="last_update_time"/>
+        <result property="limitPrice" column="limit_price"/>
+        <result property="brokeragePrice" column="brokerage_price"/>
+    </resultMap>
+
+    <select id="getItemForMiniStoreList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT t.id,t.sku,t.productO2OType FROM Products t
+        where t.onSale=1
+        <if test="productCateId != null">
+            and (
+            t.`productCatePath` like
+            concat('%',#{productCateId},'%')
+            or
+            exists (select 1 from
+            `ExtendCategories` t4 where t.`id` = t4.`productId`
+            and t4.`catePath`
+            like concat('%',#{productCateId},'%') )
+            )
+        </if>
+        <if test="skuList != null">
+            AND t.sku in
+            <foreach collection="skuList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="keyword != null">
+            and (t.`keywords` like
+            concat('%',#{keyword},'%')
+            or t.`productName` like
+            concat('%',#{keyword},'%')
+            or t.`productTitle` like
+            concat('%',#{keyword},'%'))
+        </if>
+        <if test="priceArea &gt; 0">
+            <choose>
+                <when test="priceArea &lt; 6000">
+                    and t.saleGuidePrice &gt; (#{priceArea}-1000) AND t.saleGuidePrice &lt;= #{priceArea}
+                </when>
+                <when test="priceArea &gt;= 6000">
+                    and t.saleGuidePrice &gt; 5000
+                </when>
+            </choose>
+        </if>
+
+        <if test="brandId != null">
+            and brandId = #{brandId}
+        </if>
+        <choose>
+            <when test="sortColumn == 'priceAsc'">
+                order by t.`saleGuidePrice`, t.`addTime` desc,
+                t.`id` desc
+            </when>
+            <when test="sortColumn == 'priceDesc'">
+                order by t.`saleGuidePrice` desc, t.`addTime` desc,
+                t.`id` desc
+            </when>
+            <when test="sortColumn == 'commentDesc'">
+                order by t.`HeroitteCommentNum` desc, t.`addTime`
+                desc, t.`id` desc
+            </when>
+            <when test="sortColumn == 'newDesc'">
+                order by t.`addTime` desc, t.`id` desc
+            </when>
+            <when test="sortColumn == 'isHotDesc'">
+                AND t.isHot = 1
+                order by t.`addTime` desc, t.`id` desc
+            </when>
+            <when test="sortColumn == 'isHotAsc'">
+                AND t.isHot = 1
+                order by t.`addTime` asc, t.`id` asc
+            </when>
+            <when test="sortColumn == 'saleAsc'">
+                order by (t.`saleNum` + t.`virtualSaleNum`) asc,
+                t.`addTime` asc,
+                t.`id` asc
+            </when>
+            <otherwise>
+                order by (t.`saleNum` + t.`virtualSaleNum`) desc,
+                t.`addTime` desc,
+                t.`id` desc
+            </otherwise>
+        </choose>
+    </select>
+    <select id="getOnlineProducts" parameterType="java.util.Map" resultType="string">
+        SELECT sku FROM Products t
+        where t.onSale=1 and t.sku in
+        <foreach collection="skuList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 根据SKU查询商城商品信息 -->
+    <select id="getItemBySku" parameterType="java.lang.String" resultMap="productsResult">
+        SELECT * FROM Products t
+        where t.onSale=1 and t.sku = #{sku}
+    </select>
+    <!-- 根据SKU查询商城商品信息 -->
+    <select id="getItemById" parameterType="java.lang.Integer" resultMap="productsResult">
+        SELECT * FROM Products
+        where id = #{productId}
+    </select>
+
+    <select id="getShopSkusBySkusAndPrductCate" resultType="string">
+        SELECT t.sku FROM Products t
+        where t.onSale=1 and t.sku in
+        <foreach collection="skuList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="productCateId != null">
+            and (
+            t.`productCatePath` like
+            concat('%',#{productCateId},'%')
+            or
+            exists (select 1 from
+            `ExtendCategories` t4 where t.`id` = t4.`productId`
+            and t4.`catePath`
+            like concat('%',#{productCateId},'%') )
+            )
+        </if>
+    </select>
+
+    <!-- 搜索 -->
+    <select id="getProductsByKeywords" parameterType="map" resultMap="productsResult">
+        SELECT * FROM Products t where t.onSale=1
+        <if test="skuList != null">
+            AND t.sku in
+            <foreach collection="skuList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="keyword != null">
+            and (t.`keywords` like
+            concat('%',#{keyword},'%')
+            or t.`productName` like
+            concat('%',#{keyword},'%')
+            or t.`productTitle` like
+            concat('%',#{keyword},'%'))
+        </if>
+        order by (t.`saleNum` + t.`virtualSaleNum`) desc,
+        t.`addTime` desc,
+        t.`id` desc
+    </select>
+
+    <!-- 根据商品sku和storeCode查询库存数量 -->
+    <select id="getO2OStockNum" resultType="int" parameterType="map">
+        SELECT stock_num AS stockNum FROM prd_store_products WHERE sku= #{sku}
+        AND store_code = #{storeCode} AND on_sale=1;
+    </select>
+
+    <!-- 根据商品sku和storeCode查询O2O商品 -->
+    <select id="getO2OProduct" resultMap="prdStoreProductsResult" parameterType="map">
+        SELECT * FROM  prd_store_products WHERE sku = #{sku} AND
+        store_code = #{storeCode} AND  on_sale=1
+    </select>
+</mapper>

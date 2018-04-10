@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haier.m.dao.shop.read.RegionReadDao">
+
+    <resultMap id="regionResult" type="com.haier.m.entity.region.Region">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parentId"/>
+        <result property="regionName" column="regionName"/>
+        <result property="code" column="code" />
+        <result property="parentPath" column="parentPath" />
+    </resultMap>
+
+    <resultMap id="regionRedisResult" type="com.haier.m.entity.region.RegionRedis">
+        <result property="id" column="id"/>
+        <result property="regionName" column="regionName"/>
+        <result property="code" column="code"/>
+        <result property="regionType" column="regionType"/>
+        <result property="visible" column="visible"/>
+    </resultMap>
+
+    <resultMap id="pcrsRegionResult" type="com.haier.m.entity.region.PcrsRegion">
+        <result property="proviceId" column="proviceId"/>
+        <result property="cityId" column="cityId"/>
+        <result property="regionId" column="regionId" />
+        <result property="streetId" column="streetId" />
+    </resultMap>
+
+    <select id="getAllRegionAndStreet" parameterType="String" resultMap="regionResult">
+        select `id`,`parentId`,`regionName`,`code` from `Regions`
+        where `regionType` in (3,4) and `activeFlag`=1
+    </select>
+
+    <select id="getRegionByPid" parameterType="String" resultMap="regionResult">
+		select `id`,`parentId`,`regionName`,`code` from `Regions`
+		where `parentId` = #{pId}  and `activeFlag`=1
+	</select>
+
+    <select id="getRegionByParentId" parameterType="String" resultMap="regionRedisResult">
+        select `id`,`regionName`,`regionType`,`visible` from `Regions`
+        where `parentId` = #{pId}  and `activeFlag`=1 order by convert(`regionName` USING gbk)
+    </select>
+
+    <select id="getRegionByParentIdAndSecond" parameterType="String" resultMap="regionRedisResult">
+        SELECT a.`id`,a.`regionName`,a.`regionType`,a.`visible`
+        FROM `Regions` a, `Regions` b
+        WHERE b.parentId=a.id
+        AND b.activeFlag=1
+        AND a.activeFlag=1
+        and a.parentId= #{pId}
+        GROUP BY a.id
+        order by convert(a.`regionName` USING gbk)
+    </select>
+
+    <select id="getRegionByParentIdAndThird" parameterType="String" resultMap="regionRedisResult">
+        SELECT ra.`id`,ra.`regionName`,ra.`regionType`,ra.`visible`
+        FROM `Regions` ra, `Regions` rb,`Regions` rc
+        WHERE rb.parentId=ra.id AND rc.parentId=rb.id
+          and ra.parentId=#{pId} AND rb.activeFlag=1 AND rc.activeFlag=1 AND ra.`visible`= 1
+        GROUP BY ra.id
+        order by convert(ra.`regionName` USING gbk)
+    </select>
+
+    <select id="getProvinces" resultMap="regionResult">
+		select `id`,`parentId`,`regionName`,`code` from `Regions`
+		where `parentId`= 0 and `activeFlag`=1
+		order by `firstLetter` asc
+	</select>
+
+    <select id="getCities" resultMap="regionResult">
+        select `id`,`parentId`,`regionName`,`code` from `Regions`
+        where `parentId` in
+        <foreach collection="set" index="index" item="item" open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+        and `visible`= 1
+        order by `parentId` asc, `id` asc
+    </select>
+
+    <select id="getRegions" resultMap="regionResult">
+        select `id`,`parentId`,`regionName`,`code` from `Regions`
+        where `parentId` in
+        <foreach collection="set" index="index" item="item" open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+        and `activeFlag`=1
+        order by `parentId` asc, `id` asc
+    </select>
+
+    <select id="getRegionNameById" parameterType="Integer" resultMap="regionResult">
+        SELECT r.regionName,re.regionName AS cityName,reg.regionName AS provinceName,r.code as code,r.parentId
+        FROM `Regions` r
+        LEFT JOIN Regions re ON re.id = r.parentId
+        LEFT JOIN Regions reg ON reg.id = re.parentId
+        where r.id = #{id}
+    </select>
+
+
+    <select id="getRegionNameByIds" resultMap="regionRedisResult" >
+        select `id`,`regionName`,`code` from `Regions`
+        where `id` in
+        <foreach collection="ids" index="index" item="item" open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+        and `activeFlag`=1
+    </select>
+
+
+ 	<select id="getRegionsAll" resultMap="regionResult">
+        select `id`,`parentId`,`regionName`,`code` from `Regions`
+        where 1=1
+        and `activeFlag`=1
+        order by `parentId` asc, `id` asc
+    </select>
+
+    <!-- 根据国标码和街道名称查询街道名称 -->
+    <select id="getRegionByCode" resultMap="pcrsRegionResult">
+        select r.id as regionId, city.id as cityId, provice.id as provinceId
+        FROM `Regions` r
+          Left JOIN Regions city on r.parentId = city.id
+          Left JOIN Regions provice on city.parentId = provice.id
+        WHERE r.code = #{code} and r.activeFlag = 1 and r.visible = 1
+    </select>
+
+    <select id="getRegionByName" resultMap="regionResult">
+        select `id`,`parentId`,`regionName`,`code` from `Regions`
+		where regionName LIKE CONCAT('%', #{name},'%') and parentId = #{regionId} and activeFlag = 1 and visible = 1
+    </select>
+</mapper>
